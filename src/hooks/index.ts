@@ -10,3 +10,4 @@ export { default as usePrevious } from './usePrevious';
 export { default as useTimer } from './useTimer';
 export { default as useWarning } from './useWarning';
 export { default as useNetworkBlocker } from './useNetworkBlocker';
+export { default as useExternalRequestBlocker } from './useExternalRequestBlocker';

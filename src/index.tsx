@@ -9,15 +9,15 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-// Register Service Worker to block HTTP requests
+// Register Service Worker to block external HTTP requests
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw-external-blocker.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        console.log('🔒 External Request Blocker SW registered: ', registration);
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+        console.log('🔒 External Request Blocker SW registration failed: ', registrationError);
       });
   });
 }

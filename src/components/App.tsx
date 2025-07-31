@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import BiosenseSignalMonitor from './BiosenseSignalMonitor';
 import SettingsBars from './SettingsBars';
 import { Flex } from './shared/Flex';
-import { useCameras, useDisableZoom, useNetworkBlocker } from '../hooks';
+import { useCameras, useDisableZoom, useExternalRequestBlocker } from '../hooks';
 import UAParser from 'ua-parser-js';
 
 const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
@@ -18,18 +18,21 @@ const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
 `;
 
 const App = () => {
-  // Network blocker configuration
-  useNetworkBlocker({
+  // External request blocker configuration
+  const { getStats, resetStats } = useExternalRequestBlocker({
+    enabled: true,
     blockMode: 'mock', // 'block' | 'mock' | 'log'
-    allowedDomains: [
-      'localhost',
-      '127.0.0.1',
-      window.location.hostname,
-      // Add any essential domains your BioSense SDK needs
+    allowStaticResources: true,
+    allowedExternalDomains: [
+      // Add any specific external domains your BioSense SDK needs
       // 'api.biosensesignal.com',
+      // 'cdn.jsdelivr.net',
     ],
-    onBlocked: (url, method) => {
-      console.log(`🚫 Network request blocked: ${method} ${url}`);
+    onExternalBlocked: (url, method) => {
+      console.log(`🚫 External request blocked: ${method} ${url}`);
+    },
+    onInternalAllowed: (url, method) => {
+      console.log(`✅ Internal request allowed: ${method} ${url}`);
     },
   });
 
@@ -41,6 +44,18 @@ const App = () => {
     UAParser(navigator.userAgent).device.type === 'mobile',
   );
   useDisableZoom();
+
+  // Log blocking stats periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const stats = getStats();
+      if (stats.externalBlocked > 0 || stats.internalAllowed > 0 || stats.externalAllowed > 0) {
+        console.log('📊 Request blocking stats:', stats);
+      }
+    }, 10000); // Log every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [getStats]);
 
   const onSettingsClickedHandler = useCallback((event) => {
     const settingsBars = document.getElementById('settingsBars');

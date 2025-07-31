@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import BiosenseSignalMonitor from './BiosenseSignalMonitor';
 import SettingsBars from './SettingsBars';
 import { Flex } from './shared/Flex';
-import { useCameras, useDisableZoom } from '../hooks';
+import { useCameras, useDisableZoom, useNetworkBlocker } from '../hooks';
 import UAParser from 'ua-parser-js';
 
 const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
@@ -18,6 +18,21 @@ const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
 `;
 
 const App = () => {
+  // Network blocker configuration
+  useNetworkBlocker({
+    blockMode: 'mock', // 'block' | 'mock' | 'log'
+    allowedDomains: [
+      'localhost',
+      '127.0.0.1',
+      window.location.hostname,
+      // Add any essential domains your BioSense SDK needs
+      // 'api.biosensesignal.com',
+    ],
+    onBlocked: (url, method) => {
+      console.log(`🚫 Network request blocked: ${method} ${url}`);
+    },
+  });
+
   const cameras = useCameras();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [cameraId, setCameraId] = useState<string>();

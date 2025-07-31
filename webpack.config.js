@@ -68,6 +68,11 @@ function common() {
               ignore: ['**/main.*'],
             },
           },
+          // Copy service worker to root of build directory
+          {
+            from: path.resolve(paths.src, 'sw.js'),
+            to: path.resolve(paths.build, 'sw.js'),
+          },
         ],
       }),
     ],

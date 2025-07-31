@@ -9,6 +9,19 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
+// Register Service Worker to block HTTP requests
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
 ReactDOM.render(
   <Wrapper>
     <GlobalStyle />

@@ -68,10 +68,12 @@ const useMonitor = (
   }, []);
 
   const onVitalSign = useCallback((vitalSign: VitalSigns) => {
+    console.log('Vital sign response:', vitalSign);
     updateVitalSigns(vitalSign);
   }, []);
 
   const onFinalResults = useCallback((vitalSignsResults: VitalSignsResults) => {
+    console.log('Final vital signs results response:', vitalSignsResults);
     setVitalSigns(null);
     updateVitalSigns(vitalSignsResults.results);
   }, []);
@@ -98,17 +100,20 @@ const useMonitor = (
   }, []);
 
   const onEnabledVitalSigns = useCallback((vitalSigns: EnabledVitalSigns) => {
+    console.log('Enabled vital signs response:', vitalSigns);
     setEnabledVitalSigns(vitalSigns);
   }, []);
 
   const onOfflineMeasurement = useCallback(
     (offlineMeasurements: OfflineMeasurements) => {
+      console.log('Offline measurements response:', offlineMeasurements);
       setOfflineMeasurements(offlineMeasurements);
     },
     [],
   );
 
   const onActivation = useCallback((activationId: string) => {
+    console.log('Device activation response:', activationId);
     // the device has been activated with activationId
   }, []);
 
@@ -144,7 +149,7 @@ const useMonitor = (
   useEffect(() => {
     (async () => {
       try {
-        await monitor.initialize({
+        const initResponse = await monitor.initialize({
           licenseKey,
           licenseInfo: {
             onEnabledVitalSigns,
@@ -153,6 +158,7 @@ const useMonitor = (
           },
         });
         console.log(`Initialized monitor`);
+        console.log('Monitor initialization response:', initResponse);
         setIsMonitorReady(true);
         setError({ code: -1 });
       } catch (e) {
@@ -199,6 +205,7 @@ const useMonitor = (
 
         const faceSession = await monitor.createFaceSession(options);
         console.log(`Session created`);
+        console.log('Face session creation response:', faceSession);
         setSession(faceSession);
         setError({ code: -1 });
       } catch (e) {

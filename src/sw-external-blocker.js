@@ -13,10 +13,12 @@ const INTERNAL_DOMAINS = [
 ];
 
 const ALLOWED_EXTERNAL_DOMAINS = [
-  // Add any specific external domains you need to allow
+  // BioSense Signal API - REQUIRED for app functionality
+  'api.biosensesignal.com',
+  'biosensesignal.com',
+  // Add other essential external domains if needed
   // 'cdn.jsdelivr.net',
   // 'fonts.googleapis.com',
-  // 'api.yourdomain.com',
 ];
 
 const STATIC_RESOURCE_PATTERNS = [

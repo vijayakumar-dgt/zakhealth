@@ -13,8 +13,10 @@ const paths = {
 // External request blocking proxy configuration
 const createExternalBlockingProxy = () => {
   const allowedExternalDomains = [
-    // Add allowed external domains here
-    // 'api.yourdomain.com',
+    // BioSense Signal API - REQUIRED for app functionality
+    'api.biosensesignal.com',
+    'biosensesignal.com',
+    // Add other essential external domains if needed
     // 'cdn.jsdelivr.net',
   ];
 

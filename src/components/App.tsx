@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import BiosenseSignalMonitor from './BiosenseSignalMonitor';
 import SettingsBars from './SettingsBars';
+import NetworkBlockingTest from './NetworkBlockingTest';
 import { Flex } from './shared/Flex';
 import { useCameras, useDisableZoom, useExternalRequestBlocker } from '../hooks';
 import UAParser from 'ua-parser-js';
@@ -24,8 +25,10 @@ const App = () => {
     blockMode: 'mock', // 'block' | 'mock' | 'log'
     allowStaticResources: true,
     allowedExternalDomains: [
-      // Add any specific external domains your BioSense SDK needs
-      // 'api.biosensesignal.com',
+      // BioSense Signal API - REQUIRED for app functionality
+      'api.biosensesignal.com',
+      'biosensesignal.com',
+      // Add other essential external domains if needed
       // 'cdn.jsdelivr.net',
     ],
     onExternalBlocked: (url, method) => {
@@ -109,6 +112,8 @@ const App = () => {
         cameras={cameras}
         isLicenseValid={isLicenseValid}
       />
+      {/* Test component - remove in production */}
+      <NetworkBlockingTest enabled={process.env.NODE_ENV === 'development'} />
     </Container>
   );
 };

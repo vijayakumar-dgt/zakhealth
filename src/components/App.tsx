@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import BiosenseSignalMonitor from './BiosenseSignalMonitor';
 import SettingsBars from './SettingsBars';
+import NetworkBlockingTest from './NetworkBlockingTest';
 import { Flex } from './shared/Flex';
-import { useCameras, useDisableZoom } from '../hooks';
+import { useCameras, useDisableZoom, useExternalRequestBlocker } from '../hooks';
 import UAParser from 'ua-parser-js';
 
 const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
@@ -18,6 +19,26 @@ const Container = styled(Flex)<{ isSettingsOpen: boolean }>`
 `;
 
 const App = () => {
+  // External request blocker configuration
+  const { getStats, resetStats } = useExternalRequestBlocker({
+    enabled: true,
+    blockMode: 'mock', // 'block' | 'mock' | 'log'
+    allowStaticResources: true,
+    allowedExternalDomains: [
+      // BioSense Signal API - REQUIRED for app functionality
+      'api.biosensesignal.com',
+      'biosensesignal.com',
+      // Add other essential external domains if needed
+      // 'cdn.jsdelivr.net',
+    ],
+    onExternalBlocked: (url, method) => {
+      console.log(`🚫 External request blocked: ${method} ${url}`);
+    },
+    onInternalAllowed: (url, method) => {
+      console.log(`✅ Internal request allowed: ${method} ${url}`);
+    },
+  });
+
   const cameras = useCameras();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [cameraId, setCameraId] = useState<string>();
@@ -26,6 +47,18 @@ const App = () => {
     UAParser(navigator.userAgent).device.type === 'mobile',
   );
   useDisableZoom();
+
+  // Log blocking stats periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const stats = getStats();
+      if (stats.externalBlocked > 0 || stats.internalAllowed > 0 || stats.externalAllowed > 0) {
+        console.log('📊 Request blocking stats:', stats);
+      }
+    }, 10000); // Log every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [getStats]);
 
   const onSettingsClickedHandler = useCallback((event) => {
     const settingsBars = document.getElementById('settingsBars');
@@ -79,6 +112,8 @@ const App = () => {
         cameras={cameras}
         isLicenseValid={isLicenseValid}
       />
+      {/* Test component - remove in production */}
+      <NetworkBlockingTest enabled={process.env.NODE_ENV === 'development'} />
     </Container>
   );
 };
